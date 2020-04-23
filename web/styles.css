@@ -13,6 +13,16 @@ html, body {
   text-align: center;
 }
 
+.title {
+  margin: auto;
+  width: 100%;
+/*  border: 3px solid green; */
+  padding: 10px;
+  text-align: center;
+  font-family: sans;
+  font-size: 24pt;
+}
+
 .centeredDiv {
   margin: auto;
   width: 100%;

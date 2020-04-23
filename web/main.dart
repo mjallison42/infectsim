@@ -2,8 +2,8 @@ import 'dart:html';
 
 import 'package:modern_charts/modern_charts.dart';
 
+import 'lib/city.dart';
 import 'lib/entity.dart';
-import 'lib/environment.dart';
 import 'lib/model.dart';
 import 'lib/policy.dart';
 import 'lib/simulation.dart';
@@ -139,9 +139,13 @@ class WebSimulationListener extends SimulationListener {
   }
 
   @override
-  void simulationEvent(Housing env, int time, int infectedCount, int deceasedCount) {
+  void simulationEvent(City city, int time, int infectedCount, int deceasedCount) {
+    if( time == 0 ) {
+      querySelector( '#city_name' ).text = city.name;
+    }
+
     canvasAdapter.adjustSize();
-    canvasAdapter.drawEnv( env );
+    canvasAdapter.drawEnv( city.suburbanShores );
 
     // update chart data
     var data = [time, infectedCount];
@@ -182,9 +186,14 @@ class WebSimulation extends Simulation {
   bool stopped = false;
   bool paused  = false;
 
+  void newTitle( MouseEvent me ) {
+    city.name = NameGenerator.generate();
+    querySelector('#city_name').text = city.name;
+  }
+
   WebSimulation(
-      Housing e, Model m, List<Entity> pop, Policy p, WebSimulationListener l)
-      : super(e, m, pop, p, l) {
+      City c, Model m, List<Entity> pop, Policy p, WebSimulationListener l)
+      : super(c, m, pop, p, l) {
     play = Button( '#btn_play', 'btn_play_dis.png', 'btn_play.png', 'btn_play_on.png' );
     play.enable();
 
@@ -195,6 +204,8 @@ class WebSimulation extends Simulation {
     stop = Button( '#btn_stop', 'btn_stop_dis.png', 'btn_stop.png', 'btn_stop_on.png' );
     stop.disable();
     stop.setOnClick( clickStop );
+
+    querySelector("#city_name").onClick.capture(newTitle);
   }
 
   void animateStep(num jstime) {
@@ -255,9 +266,9 @@ void main() {
 
   // Init the population
   final population = Entity.MakePopulation(maxPopulation, 1);
-  final env = Housing(houseX, houseY);
+  final city = City(houseX, houseY);
 
   final sim = WebSimulation(
-      env, disease, population, DefaultPolicy(), WebSimulationListener());
+      city, disease, population, DefaultPolicy(), WebSimulationListener());
   sim.simulate(0, 2000);
 }

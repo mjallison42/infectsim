@@ -1,38 +1,38 @@
 import 'dart:math';
 
-import 'environment.dart';
+import 'city.dart';
 import 'entity.dart';
 import 'model.dart';
 import 'normal.dart';
 import 'policy.dart';
 
 abstract class SimulationListener {
-  void simulationEvent( Housing env, int time, int infected, int deceased );
+  void simulationEvent( City city, int time, int infected, int deceased );
 }
 
 class Simulation {
   Random       rng;
   NormalRandom nrng;
 
-  Housing  env;
+  City         city;
   Model        model;
   List<Entity> population;
   int          maxPopulation;
   SimulationListener listener;
   Policy       policy;
 
-  Simulation( Housing e, Model m, List<Entity> pop, Policy p, SimulationListener l ) {
+  Simulation( City c, Model m, List<Entity> pop, Policy p, SimulationListener l ) {
   rng = Random();
   nrng = NormalRandom();
 
-  env           = e;
+  city          = c;
   model         = m;
   population    = pop;
   maxPopulation = pop.length;
   policy        = p;
   listener      = l;
 
-  env.populate(population, rng);
+  city.suburbanShores.populate(population, rng);
   }
 
   int step( int t ) {
@@ -40,16 +40,16 @@ class Simulation {
     var deceasedCount = 0;
 
     for( var en in population ) {
-      env.move( en, rng );
+      city.suburbanShores.move( en, rng );
     }
-    env.infect(model, t, rng, nrng);
+    city.suburbanShores.infect(model, t, rng, nrng);
 
     for( var en in population ) {
       if( en.infected ) infectedCount++;
       if( en.deceased ) deceasedCount++;
     }
 
-    listener?.simulationEvent(env, t, infectedCount, deceasedCount );
+    listener?.simulationEvent(city, t, infectedCount, deceasedCount );
 
     return infectedCount;
   }
@@ -66,7 +66,7 @@ class Simulation {
         deceasedCount++;
       }
     }
-    listener?.simulationEvent(env, t0, infectedCount, deceasedCount );
+    listener?.simulationEvent(city, t0, infectedCount, deceasedCount );
 
     for( var t = t0; t < tmax; t++ ) {
       var infCount = step( t );
