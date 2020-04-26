@@ -15,9 +15,10 @@
 <body>
 
   <div id="city_name" class="title"></div>
-  <div class="coreDiv">
+   <div class="coreDiv">
       <div id="mapContainer" class="mapVis">
-          <canvas id="envcanvas"></canvas>
+          <canvas id="mainstreet" width="500" height="300" class="debug"></canvas>
+          <canvas id="envcanvas" width="500", height=500"></canvas>
           <div id="simstate" class="centeredDiv">
               <span class="simValue">Timestamp = <span id="timestep"></span></span></span>
 
@@ -30,6 +31,7 @@
           <div id="deceasedChart" class="chart"></div>
           <div id="buttons" class="buttonBar">
               <img src="graphics/btn_play_dis.png" id="btn_play" class="button">
+              <img src="graphics/btn_fw_chap_dis.png" id="btn_single" class="button">
               <img src="graphics/btn_pause_dis.png" id="btn_pause" class="button">
               <img src="graphics/btn_stop_dis.png" id="btn_stop" class="button">
           </div>

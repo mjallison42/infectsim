@@ -74,30 +74,63 @@ class Button {
   }
 }
 
-class CanvasAdapter {
+abstract class AbstractCanvasAdapter {
   final bkgnd = Color(255, 255, 255, 255);
+  final black = Color(  0,   0,   0, 255);
   final empty = Color(240, 240, 240, 255);
   final infCol = Color(255, 0, 0, 255);
+  final immuneCol = Color(255, 255, 0, 255);
   final healthCol = Color(0, 255, 0, 255);
+
+  final margin = 0.5;
 
   CanvasElement canvas;
   Element       container;
-  var           context;
+  CanvasRenderingContext2D context;
 
-  CanvasAdapter( CanvasElement c, Element cont ) {
+  AbstractCanvasAdapter( CanvasElement c, Element cont ) {
     canvas = c;
     container = cont;
     context = canvas.context2D;
   }
 
-  void adjustSize() {
-    num pSize = min( container.clientWidth, window.innerHeight-100);
-    canvas.width = pSize;
-    canvas.height = pSize;
-  }
-
   void setFillColor(Color c) {
     context.setFillColorRgb(c.r, c.g, c.b, c.a);
+  }
+
+  Color colorOf( Building b ) {
+    if (b.occupants.isEmpty) {
+      return empty;
+    } else {
+      var infectedCount = 0;
+      var immuneCount = 0;
+      for (var en in b.occupants) {
+        if (en.infected) {
+          infectedCount++;
+        }
+        if (en.immune) {
+          immuneCount++;
+        }
+      }
+
+      if( infectedCount == 0 && immuneCount == 0 ) {
+        return healthCol ;
+      } else if ( infectedCount > 0 ) {
+        return infCol ;
+      } else {
+        return immuneCol ;
+      }
+    }
+  }
+}
+
+class HousingCanvasAdapter extends AbstractCanvasAdapter {
+  HousingCanvasAdapter( CanvasElement c, Element cont ) : super(c, cont) ;
+
+  void adjustSize() {
+//    num pSize = min( container.clientWidth, window.innerHeight-250);
+//    canvas.width = pSize;
+//    canvas.height = pSize;
   }
 
   void drawEnv( Housing env ) {
@@ -105,8 +138,6 @@ class CanvasAdapter {
     final width = canvas.width;
     final height = canvas.height;
     context.fillRect(0, 0, width, height);
-
-    final margin = 0.25;
 
     var lotWidth = width / env.size_x;
     var lotHeight = height / env.size_y;
@@ -116,20 +147,72 @@ class CanvasAdapter {
 
     for (var y = 0; y < env.size_y; y++) {
       for (var x = 0; x < env.size_x; x++) {
-        if (env.rooms[y][x].isEmpty) {
-          setFillColor(empty);
-        } else {
-          var infectedCount = 0;
-          for (var en in env.rooms[y][x]) {
-            if (en.infected) {
-              infectedCount++;
-            }
-            setFillColor((infectedCount == 0) ? healthCol : infCol);
-          }
-        }
+        setFillColor( colorOf( env.rooms[y][x] ) );
         var ix = x * lotWidth;
         var iy = y * lotHeight;
         context.fillRect(ix, iy, bldgWidth, bldgHeight);
+      }
+    }
+  }
+}
+
+class BusinessCanvasAdapater extends AbstractCanvasAdapter {
+  BusinessCanvasAdapater( CanvasElement c, Element cx ) : super( c, cx );
+
+  void adjustSize() {
+//    canvas.width = container.clientWidth;
+  }
+
+  void drawEnv( BusinessDistrict bd ) {
+    setFillColor(bkgnd);
+
+    // I'm so crappy with HTML, I can't seem to get the values set in the CSS.
+    // So I'm hacking it in as hardwired.
+    final width = canvas.width;
+    final height = canvas.height;
+    context.fillRect(0, 0, width, height);
+
+    var sqArea = width * height;
+    var lotArea = sqArea / bd.bldgs.length;
+    var rows = height ~/ sqrt(lotArea).truncate() + 1;
+    var lotSize = height ~/ rows;
+    var maxBlockCount = (bd.bldgs.length / rows).truncate();
+
+    var lotHeight = lotSize;
+    var lotWidth  = lotSize;
+
+    var bldgWidth = lotWidth - margin*2;
+    var bldgHeight = lotHeight - margin*2;
+
+//    print( "width $width" );
+//    print( "height $height" );
+//    print( "b# ${bd.bldgs.length}" );
+//    print( "maxBlockCount $maxBlockCount" );
+//    print( "rows $rows" );
+//    print( "lot <$lotWidth,$lotHeight>" );
+//    print( "bld <$bldgWidth,$bldgHeight>" );
+
+    var x = 0.0;
+    var y = height * 1.0 - lotHeight;
+
+    var xCounter = 0;
+
+    // Hacked, should get this from the font
+    var fs = 12;
+    var xo = (lotWidth - fs);
+    var yo = fs;
+    for( var b = 0; b < bd.bldgs.length; b++ ) {
+      setFillColor( colorOf( bd.bldgs[b]) );
+      context.fillRect(x, y, bldgWidth, bldgHeight);
+      String t = bd.bldgs[b].typeString;
+      context.strokeText( t, x + xo, y + yo );
+
+      x = x + lotWidth;
+      xCounter++;
+      if( xCounter > maxBlockCount ) {
+        xCounter = 0;
+        x = 0;
+        y -= lotHeight;
       }
     }
   }

@@ -13,10 +13,10 @@ class NameGenerator {
                             ' Cut', ' Basin', ' Pass', ' Point', ' Grove', ' Bend',
                             ' Haven', ' Beach', ' Pairie', ' Park', ' Shore', ' Point',
                             ' Cove', ' Hill', ' Bluff', ' Crossing', ' Falls',
-                            ' Junction', ' Hallow', ' Rest', ' Knoll', ' Cave',
-                            ' Gate', ' Ridge',
+                            ' Junction', ' Hollow', ' Rest', ' Knoll', ' Cave',
+                            ' Gate', ' Ridge', ' Fen', ' Beach',
                             'mont', 'ly', 'burg', 'ham', 'wold', 'ford', 'son', 'well',
-                            'wick'];
+                            'wick', 'land', 'don'];
 
   static const prefix   = [ 'New ', 'Old ', 'St. ', 'Ban-', 'Tri-', 'Mor', 'Grand ', 'Mt. ', 'Mar ',
                             'North ', 'East ', 'West ', 'South ', 'Port ', 'Fort ', 'Red ',
@@ -26,7 +26,9 @@ class NameGenerator {
                             'spunt', 'spung', 'twang', 'null', 'modus', 'mung',
                             'hack', 'fox', 'bear', 'hawk', 'ball', 'dodge', 'crab',
                             'spider', 'meep', 'keel', 'gunge', 'sping', 'nerp',
+                            'soot', 'kek', 'blint', 'dimp', 'fehj',
                             'eagle', 'swan', 'duck', 'desert', 'rock',
+                            'copper', 'silver', 'gold',
                             'apple', 'orange',
                             'john', 'mary', 'smith', 'adam', 'eve', 'thor', 'loki',
                             'anthony', 'ignatio', 'charles', 'avery', 'zelda', 'luke',
@@ -35,7 +37,7 @@ class NameGenerator {
                             'button', 'poont', 'zow', 'glerge', 'shrike', 'clang',
                             'turtle', 'vaca', 'astra',
                             'bang', 'ting', 'ooch', 'swarf', 'wort', 'sparge',
-                            'bug', 'palp', 'cap', 'bar', 'poole', 'ween',
+                            'bug', 'palp', 'cap', 'bar', 'poole', 'ween', 'kek',
                             'bool', 'knuth', 'wirth', 'tur', 'ada', 'babbage', 'hopper' ];
 
   static String generate() {
@@ -81,10 +83,12 @@ class NameGenerator {
 
 class City {
   String name;
-  Housing suburbanShores;
+  Housing housing;
+  BusinessDistrict business;
 
-  City( int sx, int sy ) {
+  City( int sx, int sy, int populationCount ) {
     name = NameGenerator.generate();
-    suburbanShores = Housing(sx, sx);
+    housing = Housing(sx, sx);
+    business = BusinessDistrict( populationCount );
   }
 }

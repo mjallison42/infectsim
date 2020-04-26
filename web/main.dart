@@ -1,4 +1,5 @@
 import 'dart:html';
+import 'dart:math';
 
 import 'package:modern_charts/modern_charts.dart';
 
@@ -14,7 +15,10 @@ class WebSimulationListener extends SimulationListener {
   var infected;
   CanvasElement canvas;
   Element mapContainer;
-  CanvasAdapter canvasAdapter;
+  HousingCanvasAdapter housingAdapter;
+  BusinessCanvasAdapater businessAdapter;
+
+  City city;
 
   // Infected chart
   var infectedChartContainer;
@@ -35,10 +39,18 @@ class WebSimulationListener extends SimulationListener {
   LineChart deceasedChart;
   var deceasedChartOptions;
 
-  WebSimulationListener() {
+  WebSimulationListener( City city ) {
+    this.city = city;
+
+//    window.onResize.listen( onResize );
+
     canvas = querySelector('#envcanvas') as CanvasElement;
     mapContainer = querySelector('#mapContainer');
-    canvasAdapter = CanvasAdapter( canvas, mapContainer );
+
+    housingAdapter = HousingCanvasAdapter( canvas, mapContainer );
+
+    var businessCanvas = querySelector( '#mainstreet' ) as CanvasElement;
+    businessAdapter = BusinessCanvasAdapater( businessCanvas, mapContainer );
 
     timeStep = querySelector('#timestep');
     infected = querySelector('#infected');
@@ -71,7 +83,8 @@ class WebSimulationListener extends SimulationListener {
       },
 
       'yAxis': {'minInterval': 10},
-      'title': {'text': 'Total infected'}
+      'title': {'text': 'Total infected'},
+      'legend': {'position': 'none' }
     };
 
     // Daily new
@@ -101,7 +114,8 @@ class WebSimulationListener extends SimulationListener {
       },
 
       'yAxis': {'minInterval': 10},
-      'title': {'text': 'Daily new cases'}
+      'title': {'text': 'Daily new cases'},
+      'legend': {'position': 'none' }
     };
 
     // Deceased chart
@@ -130,44 +144,53 @@ class WebSimulationListener extends SimulationListener {
       },
 
       'yAxis': {'minInterval': 10},
-      'title': {'text': 'Deceased'}
+      'title': {'text': 'Deceased'},
+      'legend': {'position': 'none' }
     };
   }
 
-  void onResize() {
-    canvasAdapter.adjustSize();
+  void onResize( Event e ) {
+    housingAdapter.adjustSize();
+    businessAdapter.adjustSize();
+    businessAdapter.drawEnv(city.business);
   }
 
   @override
-  void simulationEvent(City city, int time, int infectedCount, int deceasedCount) {
+  void simulationEvent(City city, double time, int infectedCount, int deceasedCount) {
     if( time == 0 ) {
       querySelector( '#city_name' ).text = city.name;
     }
 
-    canvasAdapter.adjustSize();
-    canvasAdapter.drawEnv( city.suburbanShores );
+    housingAdapter.adjustSize();
+    housingAdapter.drawEnv( city.housing );
+
+    businessAdapter.adjustSize();
+    businessAdapter.drawEnv( city.business );
 
     // update chart data
-    var data = [time, infectedCount];
-    infectedData.rows.add(data);
+    var hour = time - time.truncate();
+    if( hour == 0 ) {
+      var data = [time, infectedCount];
+      infectedData.rows.add(data);
 
-    var dailyNew = infectedCount - yesterdayInfectedCount;
-    yesterdayInfectedCount = infectedCount;
-    data = [time, dailyNew];
-    dailyNewData.rows.add(data);
+      var dailyNew = infectedCount - yesterdayInfectedCount;
+      yesterdayInfectedCount = infectedCount;
+      data = [time, dailyNew];
+      dailyNewData.rows.add(data);
 
-    data = [time, deceasedCount];
-    deceasedData.rows.add(data);
+      data = [time, deceasedCount];
+      deceasedData.rows.add(data);
 
-    // Update chart
-    if( time == 0 ) {
-      infectedChart.draw( infectedData, infectedChartOptions);
-      dailyNewChart.draw( dailyNewData, dailyNewChartOptions );
-      deceasedChart.draw( deceasedData, deceasedChartOptions );
-    } else {
-      infectedChart.update();
-      dailyNewChart.update();
-      deceasedChart.update();
+      // Update chart
+      if (time == 0) {
+        infectedChart.draw(infectedData, infectedChartOptions);
+        dailyNewChart.draw(dailyNewData, dailyNewChartOptions);
+        deceasedChart.draw(deceasedData, deceasedChartOptions);
+      } else {
+        infectedChart.update();
+        dailyNewChart.update();
+        deceasedChart.update();
+      }
     }
 
     timeStep.text = time.toString();
@@ -176,15 +199,17 @@ class WebSimulationListener extends SimulationListener {
 }
 
 class WebSimulation extends Simulation {
-  int currentTime;
-  int maxTime;
+  double currentTime;
+  double maxTime;
 
   Button play;
+  Button single;
   Button stop;
   Button pause;
 
   bool stopped = false;
   bool paused  = false;
+  bool singleStep = false;
 
   void newTitle( MouseEvent me ) {
     city.name = NameGenerator.generate();
@@ -205,34 +230,54 @@ class WebSimulation extends Simulation {
     stop.disable();
     stop.setOnClick( clickStop );
 
-    querySelector("#city_name").onClick.capture(newTitle);
+    single = Button( '#btn_single', 'btn_fw_chap_dis.png', 'btn_fw_chap.png', 'btn_fw_chap_on.png' );
+    single.enable();
+
+    querySelector('#city_name').onClick.capture(newTitle);
   }
 
   void animateStep(num jstime) {
     if( stopped || paused ) return;
 
-    if (++currentTime >= maxTime) return;
+    currentTime += timeIncrement;
+    if (currentTime >= maxTime) return;
 
     var infCount = step(currentTime);
-    if( infCount < population.length ) {
+    if( singleStep ) {
+      singleStep = false;
+      single.setOff();
+      single.enable();
+      stop.enable();
+    } else if( infCount < population.length ) {
+      singleStep = false;
       window.requestAnimationFrame(animateStep);
     }
   }
 
   @override
-  void simulate(int t0, int t) {
+  void simulate(double t0, double t) {
     currentTime = t0;
     maxTime = t;
 
     super.simulate(t0, t0);
     play.setOnClick(clickStart);
+    single.setOnClick(clickSingle);
   }
 
   void clickStart(Button b, MouseEvent e) {
     if( ! stopped ) {
       paused = false;
+      singleStep = false;
       stop.enable();
       pause.enable();
+      window.requestAnimationFrame(animateStep);
+    }
+  }
+
+  void clickSingle(Button b, MouseEvent e) {
+    if( ! stopped && ! singleStep ) {
+      paused = false;
+      singleStep = true;
       window.requestAnimationFrame(animateStep);
     }
   }
@@ -249,6 +294,7 @@ class WebSimulation extends Simulation {
     play.disable();
     pause.disable();
     stop.disable();
+    single.disable();
   }
 }
 
@@ -257,7 +303,7 @@ void main() {
   final houseY = 50;
 
   // disease c-19
-  final disease = Model(rate: 0.21, mortality: 0.03, illnessPeriod: 14);
+  final disease = Model(rate: 0.15, mortality: 0.02, illnessPeriod: 21, immuneBoost: 0.10);
 
   // disease z
 //  final disease = Model(rate: 0.75, mortality: 1, illnessPeriod: 10000);
@@ -265,10 +311,11 @@ void main() {
   final maxPopulation = houseX * houseY * 3;
 
   // Init the population
-  final population = Entity.MakePopulation(maxPopulation, 1);
-  final city = City(houseX, houseY);
+  Random r = Random();
+  final population = Entity.MakePopulation(maxPopulation, 1, r);
+  final city = City(houseX, houseY, maxPopulation);
 
   final sim = WebSimulation(
-      city, disease, population, DefaultPolicy(), WebSimulationListener());
+      city, disease, population, DefaultPolicy(), WebSimulationListener(city));
   sim.simulate(0, 2000);
 }
