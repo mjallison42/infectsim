@@ -1,4 +1,4 @@
-A toy infection simulator. <a href="mjallison42.github.io/infectsim/build/index.html">Try it here</a>
+A toy infection simulator. <a href="https://mjallison42.github.io/infectsim/build/index.html">Try it here</a>
 
 I was looking for a reason to learn a new language.
 Dart seemed like a good choice. I've always wanted to 
