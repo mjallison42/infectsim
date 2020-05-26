@@ -38,16 +38,16 @@ html, body {
 
 .chartBar {
     margin-left: 5px;
-    width: 310;
-    flex: 0.5;
+    width: 30%;
+    flex: 0.3;
     flex-direction: column;
 }
 
 .mapVis {
     margin-top: 5px;
     margin-left: 5px;
-    width: 70%;
-    flex: 1;
+    width: 60%;
+    flex: 0.6;
     flex-direction: column;
 }
 
