@@ -16,7 +16,7 @@ what the parameters of disease actually are. All you have is
 reported values, represented on the right hand side. 
 
 Your town has homes, businesses, schools, hospitals, and
-public meeting spaces. The maps is for visualization of
+public meeting spaces. The maps are for visualization of
 infection spread, it doesn't realistically map a proper
 town's layout. This simulator makes not attempt to model
 other societal aspects such as finance, or civil unrest.
