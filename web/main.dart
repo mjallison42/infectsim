@@ -150,6 +150,7 @@ class WebSimulationListener extends SimulationListener {
   }
 
   void onResize( Event e ) {
+    infectedChart.resize(true);
     housingAdapter.adjustSize();
     businessAdapter.adjustSize();
     businessAdapter.drawEnv(city.business);
