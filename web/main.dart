@@ -150,7 +150,6 @@ class WebSimulationListener extends SimulationListener {
   }
 
   void onResize( Event e ) {
-    infectedChart.resize(true);
     housingAdapter.adjustSize();
     businessAdapter.adjustSize();
     businessAdapter.drawEnv(city.business);
@@ -188,6 +187,9 @@ class WebSimulationListener extends SimulationListener {
         dailyNewChart.draw(dailyNewData, dailyNewChartOptions);
         deceasedChart.draw(deceasedData, deceasedChartOptions);
       } else {
+        print( 'Resuze s=cgart' );
+        infectedChart.resize(true);
+
         infectedChart.update();
         dailyNewChart.update();
         deceasedChart.update();
