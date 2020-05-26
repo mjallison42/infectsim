@@ -42,8 +42,6 @@ class WebSimulationListener extends SimulationListener {
   WebSimulationListener( City city ) {
     this.city = city;
 
-//    window.onResize.listen( onResize );
-
     canvas = querySelector('#envcanvas') as CanvasElement;
     mapContainer = querySelector('#mapContainer');
 
@@ -55,9 +53,15 @@ class WebSimulationListener extends SimulationListener {
     timeStep = querySelector('#timestep');
     infected = querySelector('#infected');
 
+    // Delay building the charts. If done before the page is loaded the charts
+    // are too wide (AKA buggy). I didn't get onLoad to work, so I used this.
+    Future.delayed( const Duration( milliseconds: 1), () { _buildCharts(); } );
+  }
+
+  void _buildCharts(  ) {
     // bunch of stuff for the charts
     // Total infected
-    infectedChartContainer = querySelector('#infectedChart');
+    infectedChartContainer = querySelector('#infectedChart') as DivElement;
     infectedData = DataTable([
       ['Categories', 'Infected'],
     ]);
@@ -88,7 +92,7 @@ class WebSimulationListener extends SimulationListener {
     };
 
     // Daily new
-    dailyNewChartContainer = querySelector('#dailyNewChart');
+    dailyNewChartContainer = querySelector('#dailyNewChart') as DivElement;
     dailyNewData = DataTable([
       ['Categories', 'New cases'],
     ]);
@@ -119,7 +123,7 @@ class WebSimulationListener extends SimulationListener {
     };
 
     // Deceased chart
-    deceasedChartContainer = querySelector('#deceasedChart');
+    deceasedChartContainer = querySelector('#deceasedChart') as DivElement;
     deceasedData = DataTable([
       ['Categories', 'RIP'],
     ]);
@@ -147,12 +151,16 @@ class WebSimulationListener extends SimulationListener {
       'title': {'text': 'Deceased'},
       'legend': {'position': 'none' }
     };
-  }
 
-  void onResize( Event e ) {
-    housingAdapter.adjustSize();
-    businessAdapter.adjustSize();
-    businessAdapter.drawEnv(city.business);
+    var data = [ 0, 0 ];
+    infectedData.rows.add(data);
+    infectedChart.draw(infectedData, infectedChartOptions);
+
+    dailyNewData.rows.add(data);
+    dailyNewChart.draw(dailyNewData, dailyNewChartOptions);
+
+    deceasedData.rows.add(data);
+    deceasedChart.draw(deceasedData, deceasedChartOptions);
   }
 
   @override
@@ -169,7 +177,7 @@ class WebSimulationListener extends SimulationListener {
 
     // update chart data
     var hour = time - time.truncate();
-    if( hour == 0 ) {
+    if( hour == 0 && time > 0 ) {
       var data = [time, infectedCount];
       infectedData.rows.add(data);
 
@@ -182,15 +190,9 @@ class WebSimulationListener extends SimulationListener {
       deceasedData.rows.add(data);
 
       // Update chart
-      if (time == 0) {
-        infectedChart.draw(infectedData, infectedChartOptions);
-        dailyNewChart.draw(dailyNewData, dailyNewChartOptions);
-        deceasedChart.draw(deceasedData, deceasedChartOptions);
-      } else {
-        infectedChart.update();
-        dailyNewChart.update();
-        deceasedChart.update();
-      }
+      infectedChart.update();
+      dailyNewChart.update();
+      deceasedChart.update();
     }
 
     timeStep.text = time.toString();
