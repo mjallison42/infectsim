@@ -119,7 +119,6 @@ class Housing extends Environment {
 
           if (en.deceased) {
             dead.add(en);
-            leave(en);
           }
         }
 

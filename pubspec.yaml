@@ -1,7 +1,7 @@
 name: infectSim
 description: A discrete infection simulator. Guaranteed not to match real infection models.
-# version: 1.0.0
-#homepage: https://www.example.com
+version: 1.0.0
+homepage: https://github.io/mjallison42/infectsim
 
 environment:
   sdk: '>=2.7.0 <3.0.0'
