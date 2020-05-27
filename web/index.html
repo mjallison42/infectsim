@@ -15,15 +15,22 @@
 <body>
 
   <div id="city_name" class="title"></div>
-  <div id="github" class="centeredDiv"><a href="https://github.com/mjallison42/infectsim">Git hub source</a></div>
+  <div id="github" class="centeredDiv"><a href="https://github.com/mjallison42/infectsim">Git hub source</a>
+  </div>
    <div class="coreDiv">
       <div id="mapContainer" class="mapVis">
           <canvas id="mainstreet" width="400" height="250" class="debug"></canvas>
           <canvas id="envcanvas" width="400" height=400"></canvas>
           <div id="simstate" class="centeredDiv">
               <span class="simValue">Timestamp = <span id="timestep"></span></span>
-
               <span class="simValue">Infected = <span id="infected"></span></span>
+              <span class="simValue">Deceased = <span id="deceased"></span></span>
+          </div>
+          <div id="pnambc" hidden="true" class="stats">
+              <div class="statline">Disease name: <span id="dname"></span></div>
+              <div class="statline">Infection rate: <span id="infrate"></span>%</div>
+              <div class="statline">Communicable period: <span id="commperiod"></span> days</div>
+              <div class="statline">Mortality rate: <span id="mortality"></span>%</div>
           </div>
       </div>
       <div id="chartBar" class="chartBar">

@@ -11,10 +11,13 @@ import 'lib/model.dart';
 import 'lib/policy.dart';
 import 'lib/simulation.dart';
 import 'lib/webvis.dart';
+import 'lib/normal.dart';
 
 class WebSimulationListener extends SimulationListener {
   var timeStep;
   var infected;
+  var deceased;
+  var stats;
   CanvasElement canvas;
   Element mapContainer;
   HousingCanvasAdapter housingAdapter;
@@ -45,6 +48,9 @@ class WebSimulationListener extends SimulationListener {
   WebSimulationListener( City city ) {
     this.city = city;
 
+    stats = querySelector('#pnambc');
+    stats.hidden = true;
+
     canvas = querySelector('#envcanvas') as CanvasElement;
     mapContainer = querySelector('#mapContainer');
 
@@ -55,6 +61,7 @@ class WebSimulationListener extends SimulationListener {
 
     timeStep = querySelector('#timestep');
     infected = querySelector('#infected');
+    deceased = querySelector('#deceased');
 
     // Delay building the charts. If done before the page is loaded the charts
     // are too wide (AKA buggy). I didn't get onLoad to work, so I used this.
@@ -200,6 +207,25 @@ class WebSimulationListener extends SimulationListener {
 
     timeStep.text = timeFormatter.format(time);
     infected.text = infectedCount.toString();
+    deceased.text = deceasedCount.toString();
+  }
+
+  void showStats( Model m ) {
+    NumberFormat nf = NumberFormat( "##.00" );
+
+    var irate = querySelector('#infrate');
+    irate.text = nf.format(m.rate*100);
+
+    var commperiod = querySelector('#commperiod');
+    commperiod.text = nf.format(m.illnessPeriod);
+
+    var mortality = querySelector('#mortality');
+    mortality.text = nf.format(m.mortality*100);
+
+    var dname = querySelector( '#dname' );
+    dname.text = m.name;
+
+    stats.hidden = false;
   }
 }
 
@@ -300,18 +326,40 @@ class WebSimulation extends Simulation {
     pause.disable();
     stop.disable();
     single.disable();
+    listener.showStats(model);
   }
+}
+
+String randomName() {
+  String n = "";
+  Random r = Random();
+
+  for( var i = 0; i < 3; i++ ) {
+    n += String.fromCharCode(r.nextInt(26) + 65);
+  }
+
+  n += '-';
+  n += r.nextInt(100).toString();
+  return n;
 }
 
 void main() {
   final houseX = 50;
   final houseY = 50;
 
+  // disease random
+  NormalRandom nr = NormalRandom();
+  var rate = nr.get() * 0.3;
+  var mortality = nr.get() * 0.03;
+  var period = nr.get() * 21;
+  var immuneBoost = nr.get() * 0.2;
+  final disease = Model( randomName(), rate: rate, mortality: mortality, illnessPeriod: period, immuneBoost: immuneBoost);
+
   // disease c-19
-  final disease = Model(rate: 0.15, mortality: 0.02, illnessPeriod: 21, immuneBoost: 0.10);
+//  final disease = Model( 'c-19'', rate: 0.15, mortality: 0.02, illnessPeriod: 21, immuneBoost: 0.10);
 
   // disease z
-//  final disease = Model(rate: 0.75, mortality: 1, illnessPeriod: 10000);
+//  final disease = Model( 'z-3', rate: 0.75, mortality: 1, illnessPeriod: 10000);
 
   final maxPopulation = houseX * houseY * 3;
 

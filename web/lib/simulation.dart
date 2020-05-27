@@ -8,6 +8,7 @@ import 'policy.dart';
 
 abstract class SimulationListener {
   void simulationEvent( City city, double time, int infected, int deceased );
+  void showStats( Model m );
 }
 
 enum TimePeriod { day, evening, night }

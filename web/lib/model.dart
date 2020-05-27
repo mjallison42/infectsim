@@ -2,12 +2,14 @@ import 'entity.dart';
 import 'normal.dart';
 
 class Model {
+  String name;
   double rate;
   double mortality;
-  int    illnessPeriod;
+  double illnessPeriod;
   double immuneBoost;
 
-  Model( {double rate, double mortality, illnessPeriod, immuneBoost} ) {
+  Model( String n, {double rate, double mortality, illnessPeriod, immuneBoost} ) {
+    this.name = n;
     this.rate = rate;
     this.mortality = mortality;
     this.illnessPeriod = illnessPeriod;
