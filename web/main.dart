@@ -1,6 +1,8 @@
 import 'dart:html';
 import 'dart:math';
 
+import 'package:intl/intl.dart';
+
 import 'package:modern_charts/modern_charts.dart';
 
 import 'lib/city.dart';
@@ -17,6 +19,7 @@ class WebSimulationListener extends SimulationListener {
   Element mapContainer;
   HousingCanvasAdapter housingAdapter;
   BusinessCanvasAdapater businessAdapter;
+  NumberFormat timeFormatter = NumberFormat( "####.00" );
 
   City city;
 
@@ -195,7 +198,7 @@ class WebSimulationListener extends SimulationListener {
       deceasedChart.update();
     }
 
-    timeStep.text = time.toString();
+    timeStep.text = timeFormatter.format(time);
     infected.text = infectedCount.toString();
   }
 }
