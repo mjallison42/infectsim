@@ -59,7 +59,7 @@ class Simulation {
     switch( t ) {
       case TimePeriod.day: {
         // All entities at home
-        if( en.age == AgeGroup.young && city.business.schools.length > 0 ) {
+        if( en.age == AgeGroup.young && city.business.schools.isNotEmpty ) {
           city.housing.leave( en );
           city.business.leave( en );
           var idx = r.nextInt( city.business.schools.length);
@@ -119,10 +119,10 @@ class Simulation {
     var bcensus = city.business.census();
     var census = hcensus + bcensus;
     if( census != actual ) {
-        print( "Census failure $t/$period  census: $census  pop: $actual  housing: $hcensus  business: $bcensus" );
-        var pop = this.population;
-        var bus = this.city.business;
-        var hou = this.city.housing;
+        print( 'Census failure $t/$period  census: $census  pop: $actual  housing: $hcensus  business: $bcensus' );
+        var pop = population;
+        var bus = city.business;
+        var hou = city.housing;
         return false;
     } else {
         return true;
@@ -133,7 +133,7 @@ class Simulation {
     var infectedCount = 0;
     var deceasedCount = 0;
 
-    TimePeriod period = periodFromTime(t);
+    var period = periodFromTime(t);
     for( var en in population ) {
       if( en.deceased ) continue;
 
@@ -147,7 +147,7 @@ class Simulation {
       if( en.deceased ) deceasedCount++;
     }
 
-    listener?.simulationEvent(city, t, infectedCount, deceasedCount );
+    listener.simulationEvent(city, t, infectedCount, deceasedCount );
 
     return infectedCount;
   }
@@ -164,7 +164,7 @@ class Simulation {
         deceasedCount++;
       }
     }
-    listener?.simulationEvent(city, t0, totalInfected, deceasedCount );
+    listener.simulationEvent(city, t0, totalInfected, deceasedCount );
 
     for( var t = t0; t < tmax; t++ ) {
       var infCount = step( t );

@@ -22,7 +22,7 @@ class WebSimulationListener extends SimulationListener {
   Element mapContainer;
   HousingCanvasAdapter housingAdapter;
   BusinessCanvasAdapater businessAdapter;
-  NumberFormat timeFormatter = NumberFormat( "####.00" );
+  NumberFormat timeFormatter = NumberFormat( '####.00' );
 
   City city;
 
@@ -210,8 +210,9 @@ class WebSimulationListener extends SimulationListener {
     deceased.text = deceasedCount.toString();
   }
 
+  @override
   void showStats( Model m ) {
-    NumberFormat nf = NumberFormat( "##.00" );
+    var nf = NumberFormat( '##.00' );
 
     var irate = querySelector('#infrate');
     irate.text = nf.format(m.rate*100);
@@ -331,8 +332,8 @@ class WebSimulation extends Simulation {
 }
 
 String randomName() {
-  String n = "";
-  Random r = Random();
+  var n = '';
+  var r = Random();
 
   for( var i = 0; i < 3; i++ ) {
     n += String.fromCharCode(r.nextInt(26) + 65);
@@ -348,7 +349,7 @@ void main() {
   final houseY = 50;
 
   // disease random
-  NormalRandom nr = NormalRandom();
+  var nr = NormalRandom();
   var rate = nr.get() * 0.3;
   var mortality = nr.get() * 0.03;
   var period = nr.get() * 21;
@@ -364,7 +365,7 @@ void main() {
   final maxPopulation = houseX * houseY * 3;
 
   // Init the population
-  Random r = Random();
+  var r = Random();
   final population = Entity.MakePopulation(maxPopulation, 1, r);
   final city = City(houseX, houseY, maxPopulation);
 

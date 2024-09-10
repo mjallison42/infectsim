@@ -9,19 +9,20 @@ class Model {
   double immuneBoost;
 
   Model( String n, {double rate, double mortality, illnessPeriod, immuneBoost} ) {
-    this.name = n;
+    name = n;
     this.rate = rate;
     this.mortality = mortality;
     this.illnessPeriod = illnessPeriod;
     this.immuneBoost   = immuneBoost;
   }
 
-  apply( double time, Entity en, NormalRandom nr ) {
+  void apply( double time, Entity en, NormalRandom nr ) {
     if( en.deceased ) return;
 
     var chance = nr.get() + immuneBoost;
-    if (! en.infected && chance <= rate)
+    if (! en.infected && chance <= rate) {
       en.infect(time);
+    }
 
     if( (time - en.infectionTime) > illnessPeriod ) {
       if( nr.get() < mortality ) {

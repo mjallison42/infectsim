@@ -146,8 +146,9 @@ class Housing extends Environment {
     for (var y = 0; y < size_y; y++) {
       for (var x = 0; x < size_x; x++) {
         for( var en in rooms[y][x].occupants ) {
-          if( en.id == entityId )
+          if( en.id == entityId ) {
             return rooms[y][x];
+          }
         }
       }
     }
@@ -188,19 +189,19 @@ class BusinessDistrict extends Environment {
 
     while( bldgs.length < buildingCount ) {
       if( schoolCount-- > 0 ) {
-        Building bl = Building(BuildingType.school, bldgs.length);
+        var bl = Building(BuildingType.school, bldgs.length);
         bldgs.add(bl);
         schools.add(bl);
       }
 
       if( hospitalCount-- > 0 ) {
-        Building bl = Building(BuildingType.hospital, bldgs.length);
+        var bl = Building(BuildingType.hospital, bldgs.length);
         bldgs.add(bl);
         hospitals.add(bl);
       }
 
       if( medicalCount-- > 0 ) {
-        Building bl = Building(BuildingType.medical, bldgs.length);
+        var bl = Building(BuildingType.medical, bldgs.length);
         bldgs.add(bl);
         medicalOffices.add(bl);
       }
@@ -212,7 +213,7 @@ class BusinessDistrict extends Environment {
   void makeBlock( int blockCount, int buildingCount ) {
     var t = BuildingType.community;
     for( var bc = 0; bc < blockCount && bldgs.length < buildingCount; bc++ ) {
-      Building bl = Building(t, bldgs.length);
+      var bl = Building(t, bldgs.length);
       bldgs.add(bl);
       switch( t ) {
         case BuildingType.community : {
@@ -245,7 +246,7 @@ class BusinessDistrict extends Environment {
   @override
   int census() {
     var count = 0;
-    for( Building b in bldgs ) {
+    for( var b in bldgs ) {
       count += b.occupants.length;
     }
     return count;
@@ -253,7 +254,7 @@ class BusinessDistrict extends Environment {
 
   @override
   void infect(Model m, double t, Random r, NormalRandom nr) {
-    for( Building b in bldgs ) {
+    for( var b in bldgs ) {
       var infected = false;
       for (var en in b.occupants) {
         infected |= en.infected;
@@ -290,7 +291,7 @@ class BusinessDistrict extends Environment {
   }
 
   void visit( int idx, Entity en ) {
-    Building b = bldgs[idx];
+    var b = bldgs[idx];
     b.occupants.add(en);
     en.inTown = idx;
   }
@@ -305,8 +306,9 @@ class BusinessDistrict extends Environment {
   Building find(int entityId) {
     for (var b in bldgs ) {
       for( var en in b.occupants ) {
-        if( en.id == entityId )
+        if( en.id == entityId ) {
           return b;
+        }
       }
     }
     return null;

@@ -41,7 +41,7 @@ class NameGenerator {
                             'bool', 'knuth', 'wirth', 'tur', 'ada', 'babbage', 'hopper' ];
 
   static String generate() {
-    Random r = Random();
+    var r = Random();
 
     var suffix = '';
      if( r.nextDouble() < 0.5 ) {
@@ -60,7 +60,7 @@ class NameGenerator {
     }
 
     var rootIdx = r.nextInt(roots.length);
-    String root = roots[rootIdx];
+    var root = roots[rootIdx];
 
     // Capitalize root in some circumstances
     if( pre.isEmpty || pre.endsWith(' ') || pre.endsWith('-') ) {

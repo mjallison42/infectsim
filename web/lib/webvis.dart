@@ -19,7 +19,7 @@ class Color {
 }
 
 class Button {
-  final String directory = "graphics/";
+  final String directory = 'graphics/';
   String id;
   String disabled_image;
   String enabled_image;
@@ -34,26 +34,26 @@ class Button {
 
   Button( String id, String dis, String en, String active ) {
     this.id = id;
-    this.disabled_image = directory + dis;
-    this.enabled_image = directory + en;
-    this.active_image = directory + active;
+    disabled_image = directory + dis;
+    enabled_image = directory + en;
+    active_image = directory + active;
 
     elt = querySelector( id );
     elt.onClick.capture( click );
   }
 
   void disable() {
-    this.state_disabled = true;
+    state_disabled = true;
     elt.src = disabled_image;
   }
 
   void enable() {
-    this.state_disabled = false;
+    state_disabled = false;
     elt.src = enabled_image;
   }
 
   void setOnClick( Function fn ) {
-    this.clickListener = fn;
+    clickListener = fn;
   }
 
   void click( MouseEvent ev ) {
@@ -204,7 +204,7 @@ class BusinessCanvasAdapater extends AbstractCanvasAdapter {
     for( var b = 0; b < bd.bldgs.length; b++ ) {
       setFillColor( colorOf( bd.bldgs[b]) );
       context.fillRect(x, y, bldgWidth, bldgHeight);
-      String t = bd.bldgs[b].typeString;
+      var t = bd.bldgs[b].typeString;
       context.strokeText( t, x + xo, y + yo );
 
       x = x + lotWidth;
